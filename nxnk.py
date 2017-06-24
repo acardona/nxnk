@@ -123,13 +123,13 @@ class Graph:
         knode = self.nodes.get(node, None)
         if knode is None:
             return False
-        if g.nkG.isDirected():
+        if self.nkG.isDirected():
             # Find at least one predecessor: a source that has node as target
             for ksource, ktarget in self.nkG.edges():
                 if ktarget == knode:
                     return True
         else:
-            return g.nkG.neighbors(knode)
+            return len(self.nkG.neighbors(knode)) > 0
 
     def number_of_nodes(self):
         return self.nkG.numberOfNodes()
