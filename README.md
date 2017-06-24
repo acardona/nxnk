@@ -1,7 +1,7 @@
 # nxnk
 A networkx-like wrapper for the NetworKit library
 
-NetworKit (https://github.com/kit-parco/networkit) is a python library focusing on high performance graph analysis by means of a finely tuned C++ backend, whereas NetworkX is a widely used python-only library for constructing, manipulating and analyzing graphs.
+NetworKit (https://github.com/kit-parco/networkit) is a python library focusing on high performance graph analysis by means of a finely tuned C++ backend, whereas NetworkX (https://github.com/networkx/networkx) is a widely used python-only library for constructing, manipulating and analyzing graphs.
 
 With its focus on performance, NetworKit offers an ideal library for the analysis of large graphs.
 
