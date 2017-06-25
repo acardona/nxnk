@@ -12,7 +12,6 @@ Albert Cardona, 2017-06-23
 """
 
 from networkit import graph
-from itertools import islice
 
 class Graph:
     def __init__(self, directed=False):
@@ -98,9 +97,11 @@ class Graph:
 
     def add_star(self, nodes, weight=1.0):
         """ First node makes an edge to every other node. """
-        source = nodes[0]
-        for target in islice(nodes, 1):
-            self.add_edge(source, target, weight=weight)
+        weight = float(weight)
+        knodes = self.add_nodes_from(nodes)
+        ksource = next(knodes)
+        for ktarget in knodes:
+            self.nkG.addEdge(ksource, ktarget, weight)
 
     def remove_node(self, node):
         knode = self.nodes.get(node, None)
