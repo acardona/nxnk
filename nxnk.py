@@ -14,8 +14,8 @@ Albert Cardona, 2017-06-23
 from networkit import graph
 
 class Graph:
-    def __init__(self, directed=False):
-        self.nkG = graph.Graph(directed=directed)
+    def __init__(self, directed=False, weighted=True):
+        self.nkG = graph.Graph(weighted=weighted, directed=directed)
         # Map of user-defined nodes to NetworKit-defined node IDs
         self.nodes = {}
         # Map of NetworKit-defined node IDs vs user-defined nodes
@@ -66,7 +66,8 @@ class Graph:
         ksource = self.add_node(source)
         ktarget = self.add_node(target)
         if self.nkG.hasEdge(ksource, ktarget):
-            self.nkG.setWeight(ksource, ktarget, weight)
+            if self.nkG.isWeighted():
+                self.nkG.setWeight(ksource, ktarget, weight)
         else:
             self.nkG.addEdge(ksource, ktarget, weight)
 
@@ -209,7 +210,7 @@ class Graph:
         return self.copy(directed=False)
 
     def clear(self):
-        self.nkG = graph.Graph(directed=self.nkG.isDirected())
+        self.nkG = graph.Graph(weighted=self.nkG.isWeighted(), directed=self.nkG.isDirected())
         self.nodes = {}
         self.knodes = {}
 
