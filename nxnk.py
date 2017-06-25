@@ -12,6 +12,7 @@ Albert Cardona, 2017-06-23
 """
 
 from networkit import graph
+from itertools import chain
 
 class Graph:
     def __init__(self, directed=False, weighted=True):
@@ -79,10 +80,12 @@ class Graph:
             self.add_edge(edge[0], edge[1],
                           weight=float(edge[2]) if len(edge) > 2 else 1.0)
 
-    def add_edges_from_pairs(self, edges):
+    def add_edges_from_pairs(self, edges, weight=1.0):
         """ Add edges from an iterable of pairs of nodes. All edges with default weight of 1.0. """
-        for knode1, knode2 in self.add_nodes_from(from_iterable(edges)):
-            self.nkG.addEdge(knode1, knode2) # weight is optional and defaults to 1.0
+        weight = float(weight) # ensure number
+        knodes = self.add_nodes_from(chain.from_iterable(edges)) # a generator
+        for ksource in knodes:
+            self.nkG.addEdge(ksource, next(knodes), weight)
 
     def add_path(self, nodes, weight=1.0):
         weight = float(weight)
