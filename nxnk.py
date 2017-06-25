@@ -46,8 +46,14 @@ class Graph:
         return knode
 
     def add_nodes_from(self, nodes):
+        """ Given an iterable of nodes to add, add them and return an iterable of knodes. """
         for node in nodes:
-            self.add_node(node)
+            knode = self.nodes.get(node, None)
+            if knode is None:
+                knode = self.nkG.addNode()
+                self.nodes[node] = knode
+                self.knodes[knode] = node
+            yield knode
 
     def add_edge(self, source, target, weight=1.0):
         """ Adds an edge relating source and target.
@@ -70,16 +76,21 @@ class Graph:
             describing each edge, if it has 3 entries, the 3rd entry
             is the weight, not a dictionary. """
         for edge in edges:
-            if len(edge) > 2:
-                self.add_edge(edge[0], edge[1], weight=edge[2])
-            else:
-                self.add_edge(edge[0], edge[1])
+            self.add_edge(edge[0], edge[1],
+                          weight=float(edge[2]) if len(edge) > 2 else 1.0)
+
+    def add_edges_from_pairs(self, edges):
+        """ Add edges from an iterable of pairs of nodes. All edges with default weight of 1.0. """
+        for knode1, knode2 in self.add_nodes_from(from_iterable(edges)):
+            self.nkG.addEdge(knode1, knode2) # weight is optional and defaults to 1.0
 
     def add_path(self, nodes, weight=1.0):
-        source = nodes[0]
-        for target in islice(nodes, 1, None, 1):
-            self.add_edge(source, target, weight=weight)
-            source = target
+        weight = float(weight)
+        knodes = self.add_nodes_from(nodes)
+        knode1 = next(knodes)
+        for knode2 in knodes:
+            self.nkG.addEdge(knode1, knode2, weight)# faster function call with weight as 3rd arg than as keyword arg with w=weight
+            knode1 = knode2
 
     def add_cycle(self, nodes, weight=1.0):
         self.add_path(nodes, weight=weight)
