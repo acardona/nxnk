@@ -237,6 +237,12 @@ class Graph:
         else:
             return {}
 
+    def weight(self, source, target):
+        ksource = self.nodes.get(source, None)
+        ktarget = self.nodes.get(target, None)
+        assert ksource is not None
+        assert ktarget is not None
+        return self.nkG.weight(ksource, ktarget)
 
 class DiGraph(Graph):
     def __init__(self):
