@@ -49,12 +49,18 @@ class Graph:
     def add_nodes_from(self, nodes):
         """ Given an iterable of nodes to add, add them and return an iterable of knodes.
             If a node already exists, its knode is returned in any case. """
+        # Dereference: 15% performance gain
+        addNode = self.nkG.addNode
+        get = self.nodes.get
+        setitem_nodes = self.nodes.__setitem__
+        setitem_knodes = self.knodes.__setitem__
+        #
         for node in nodes:
-            knode = self.nodes.get(node, None)
+            knode = get(node, None)
             if knode is None:
-                knode = self.nkG.addNode()
-                self.nodes[node] = knode
-                self.knodes[knode] = node
+                knode = addNode()
+                setitem_nodes(node, knode) #nodes[node] = knode
+                setitem_knodes(knode, node) #knodes[knode] = node
             yield knode
 
     def add_edge(self, source, target, weight=1.0):
@@ -89,19 +95,25 @@ class Graph:
         else:
             self.add_edge(edge[0], edge[1], float(edge[2]))
             is_weighted = self.nkG.isWeighted()
+            # Dereference: performance gain
+            hasEdge = self.nkG.hasEdge
+            addEdge = self.nkG.addEdge
+            setWeight = self.nkG.setWeight
+            #
             weights = deque() # will only ever have one single value
             def storeWeight(edge):
                 weights.append(edge[2])
                 return edge[0:2]
+            #
             knodes = self.add_nodes_from(chain.from_iterable(map(storeWeight, edges))) # here, map is faster than list comprehension
             for ksource in knodes:
                 ktarget = next(knodes)
                 w = weights.popleft()
-                if self.nkG.hasEdge(ksource, ktarget):
+                if hasEdge(ksource, ktarget):
                     if is_weighted:
-                        self.nkG.setWeight(ksource, ktarget, float(w))
+                        setWeight(ksource, ktarget, float(w))
                 else:
-                    self.nkG.addEdge(ksource, ktarget, float(w))
+                    addEdge(ksource, ktarget, float(w))
 
         """ # simple but inneficient: far too many unnecessary function calls
         for edge in edges:
@@ -110,11 +122,24 @@ class Graph:
         """
 
     def add_edges_from_pairs(self, edges, weight=1.0):
-        """ Add edges from an iterable of pairs of nodes. All edges with default weight of 1.0. """
+        """ Add edges from an iterable of pairs of nodes.
+            All edges with default weight of 1.0. """
         weight = float(weight) # ensure number
+        is_weighted = self.nkG.isWeighted()
+        # Dereference: performance gain
+        hasEdge = self.nkG.hasEdge
+        addEdge = self.nkG.addEdge
+        setWeight = self.nkG.setWeight
+        #
         knodes = self.add_nodes_from(chain.from_iterable(edges)) # a generator
+        # Consumes two nodes at a time: notice the call to next(knodes)
         for ksource in knodes:
-            self.nkG.addEdge(ksource, next(knodes), weight)
+            ktarget = next(knodes)
+            if hasEdge(ksource, ktarget):
+                if is_weighted:
+                    setWeight(ksource, ktarget, weight)
+            else:
+                addEdge(ksource, ktarget, weight)
 
     def add_path(self, nodes, weight=1.0):
         weight = float(weight)
