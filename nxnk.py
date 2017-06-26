@@ -248,9 +248,15 @@ class Graph:
         sub.nkG = self.nkG.subgraphFromNodes(sub.knodes.keys())
         return sub
 
-    def edges(self):
-        for ksource, ktarget in self.nkG.edges():
-            yield (self.knodes[ksource], self.knodes[ktarget])
+    def edges(self, weights=False):
+        if weights:
+            for ksource, ktarget in self.nkG.edges():
+                yield (self.knodes[ksource],
+                       self.knodes[ktarget],
+                       self.nkG.weight(ksource, ktarget))
+        else:
+            for ksource, ktarget in self.nkG.edges():
+                yield (self.knodes[ksource], self.knodes[ktarget])
 
     def nodes(self):
         return self.nodes.keys()
