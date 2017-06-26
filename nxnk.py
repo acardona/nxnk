@@ -39,12 +39,10 @@ class Graph:
             If the node already existed, returns the existing NetworKit ID. """
         # If present, return it
         knode = self.nodes.get(node, None)
-        if knode:
-            return knode
-        # Otherwise, create new and return it
-        knode = self.nkG.addNode()
-        self.nodes[node] = knode
-        self.knodes[knode] = node
+        if knode is None:
+            knode = self.nkG.addNode()
+            self.nodes[node] = knode
+            self.knodes[knode] = node
         return knode
 
     def add_nodes_from(self, nodes):
