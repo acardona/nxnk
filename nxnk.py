@@ -7,6 +7,8 @@ the fragility of NetworKit at the expense of performance when constructing the g
 Unlike networkx, this networkx-like wrapper over NetworKit does not concern itself with
 attributes other than weight.
 
+By design, the iterable of user-defined nodes provided as argument to many methods is only ever read once. This enables consuming generators effectively.
+
 Albert Cardona, 2017-06-23
 
 """
@@ -96,8 +98,14 @@ class Graph:
             knode1 = knode2
 
     def add_cycle(self, nodes, weight=1.0):
-        self.add_path(nodes, weight=weight)
-        self.add_edge(nodes[-1], nodes[0], weight=weight)
+        weight = float(weight)
+        knodes = self.add_nodes_from(nodes)
+        knode1 = next(knodes)
+        first = knode1
+        for knode2 in knodes:
+            self.nkG.addEdge(knode1, knode2, weight)
+            knode1 = knode2
+        self.nkG.addEdge(knode1, first, weight)
 
     def add_star(self, nodes, weight=1.0):
         """ First node makes an edge to every other node. """
