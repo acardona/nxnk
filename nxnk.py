@@ -49,18 +49,18 @@ class Graph:
     def add_nodes_from(self, nodes):
         """ Given an iterable of nodes to add, add them and return an iterable of knodes.
             If a node already exists, its knode is returned in any case. """
-        # Dereference: 15% performance gain
+        # Dereference
         addNode = self.nkG.addNode
         get = self.unodes.get
-        setitem_nodes = self.unodes.__setitem__
+        setitem_unodes = self.unodes.__setitem__
         setitem_knodes = self.knodes.__setitem__
         #
         for node in nodes:
             knode = get(node, None)
             if knode is None:
                 knode = addNode()
-                setitem_nodes(node, knode) #nodes[node] = knode
-                setitem_knodes(knode, node) #knodes[knode] = node
+                setitem_unodes(node, knode) # unodes[node] = knode
+                setitem_knodes(knode, node) # knodes[knode] = node
             yield knode
 
     def add_edge(self, source, target, weight=1.0):
