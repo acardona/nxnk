@@ -420,7 +420,7 @@ class Graph:
                         yield node, len(neighbors(ksource))
 
     def adjacency(self):
-        """ Like networkx.adjacency_iter.
+        """ Like networkx.graph.adjacency_iter.
             The order of the nodes is that of self.nodes(). """
         # Dereference
         neighbors = self.nkG.neighbors
