@@ -374,24 +374,50 @@ class Graph:
         assert ktarget is not None
         return self.nkG.weight(ksource, ktarget)
 
-    def degree_iter(self, nodes=None):
+    def degree(self, node, weight=False):
+        """ Return the degree for a single node if the node is in the graph.
+            See also: degrees (which mimics networkx.degrees_iter). """
+        # Test if nbunch holds a single, valid node
+        ksource = self.unodes.get(node, None)
+        if ksource is not None:
+            # nbunch is a single node
+            if weight:
+                return sum(self.nkG.weight(ksource, ktarget) for ktarget in self.nkG.neighbors(ksource))
+            else:
+                return len(self.nkG.neighbors(ksource))
+
+    def degrees(self, nbunch=None, weight=False):
         """ Return a generator of (node, degree) tuples.
-            When nodes=None, compute for all nodes.
-            Will silently ignore nodes not in this graph. """
+            When nbunch=None (default), compute for all nodes.
+            When weight=None (default), the degree is the number of edges,
+            otherwise the degree is the sum of a node edges' weights.
+            When an iterable of nodes is provided with nbunch, will silently ignore
+            nodes not in this graph. """
         # Dereference
-        weight = self.nkG.weight
+        weightFn = self.nkG.weight
         neighbors = self.nkG.neighbors
         #
-        if nodes is None:
-            for node, ksource in self.unodes.items():
-                yield node, sum(weight(ksource, ktarget) for ktarget in neighbors(ksource))
+        if nbunch is None:
+            # Surely there is way using partial and starmap to avoid these repetitions
+            if weight:
+                for node, ksource in self.unodes.items():
+                    yield node, sum(weightFn(ksource, ktarget) for ktarget in neighbors(ksource))
+            else:
+                for node, ksource in self.unodes.items():
+                    yield node, len(neighbors(ksource))
         else:
             # User-provided list may contain nodes not in this graph
             uget = self.unodes.get
-            for node in nodes:
-                ksource = uget(node, None)
-                if ksource is not None:
-                    yield node, sum(weight(ksource, ktarget) for ktarget in neighbors(ksource))
+            if weight:
+                for node in nbunch:
+                    ksource = uget(node, None)
+                    if ksource is not None:
+                        yield node, sum(weightFn(ksource, ktarget) for ktarget in neighbors(ksource))
+            else:
+                for node in nbunch:
+                    ksource = uget(node, None)
+                    if ksource is not None:
+                        yield node, len(neighbors(ksource))
 
     def adjacency(self):
         """ Like networkx.adjacency_iter.
