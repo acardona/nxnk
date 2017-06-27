@@ -341,6 +341,25 @@ class Graph:
         assert ktarget is not None
         return self.nkG.weight(ksource, ktarget)
 
+    def degree_iter(self, nodes=None):
+        """ Return a generator of (node, degree) tuples.
+            When nodes=None, compute for all nodes.
+            Will silently ignore nodes not in this graph. """
+        # Dereference
+        weight = self.nkG.weight
+        neighbors = self.nkG.neighbors
+        #
+        if nodes is None:
+            for node, ksource in self.unodes.items():
+                yield node, sum(weight(ksource, ktarget) for ktarget in neighbors(ksource))
+        else:
+            # User-provided list may contain nodes not in this graph
+            uget = self.unodes.get
+            for node in nodes:
+                ksource = uget(node, None)
+                if ksource is not None:
+                    yield node, sum(weight(ksource, ktarget) for ktarget in neighbors(ksource))
+
     def adjacency(self):
         """ Like networkx.adjacency_iter.
             The order of the nodes is that of self.nodes(). """
