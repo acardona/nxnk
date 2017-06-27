@@ -285,14 +285,21 @@ class Graph:
         return sub
 
     def edges(self, weight=False):
+        # Dereference
+        kget = self.knodes.__getitem__
+        #
         if weight:
+            # Dereference
+            weightFn = self.nkG.weight
+            #
             for ksource, ktarget in self.nkG.edges():
-                yield (self.knodes[ksource],
-                       self.knodes[ktarget],
-                       self.nkG.weight(ksource, ktarget))
+                yield (kget(ksource), # self.knodes[ksource]
+                       kget(ktarget), # self.knodes[ktarget]
+                       weightFn(ksource, ktarget)) # self.nkG.weight(ksource, ktarget)
         else:
             for ksource, ktarget in self.nkG.edges():
-                yield (self.knodes[ksource], self.knodes[ktarget])
+                yield (kget(ksource), # self.knodes[ksource]
+                       kget(ktarget)) # self.knodes[ktarget]
 
     def nodes(self):
         # Correct, but wrong order. Wouldn't match with order in e.g. adjacency_matrix()
