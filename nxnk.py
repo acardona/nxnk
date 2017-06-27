@@ -21,7 +21,7 @@ class Graph:
     def __init__(self, directed=False, weighted=True):
         self.nkG = graph.Graph(weighted=weighted, directed=directed)
         # Map of user-defined nodes to NetworKit-defined node IDs
-        self.nodes = {}
+        self.unodes = {}
         # Map of NetworKit-defined node IDs vs user-defined nodes
         self.knodes = {}
 
@@ -33,16 +33,16 @@ class Graph:
     def to_networkit_nodes(self, nodes):
         """ Return the NetworKit node ID (a knode) corresponding to each given user-defined node. """
         for node in nodes:
-            yield self.nodes[node]
+            yield self.unodes[node]
 
     def add_node(self, node):
         """ Adds the node and returns the NetworKit ID for the newly added node.
             If the node already existed, returns the existing NetworKit ID. """
         # If present, return it
-        knode = self.nodes.get(node, None)
+        knode = self.unodes.get(node, None)
         if knode is None:
             knode = self.nkG.addNode()
-            self.nodes[node] = knode
+            self.unodes[node] = knode
             self.knodes[knode] = node
         return knode
 
@@ -51,8 +51,8 @@ class Graph:
             If a node already exists, its knode is returned in any case. """
         # Dereference: 15% performance gain
         addNode = self.nkG.addNode
-        get = self.nodes.get
-        setitem_nodes = self.nodes.__setitem__
+        get = self.unodes.get
+        setitem_nodes = self.unodes.__setitem__
         setitem_knodes = self.knodes.__setitem__
         #
         for node in nodes:
@@ -168,10 +168,10 @@ class Graph:
             self.nkG.addEdge(ksource, ktarget, weight)
 
     def remove_node(self, node):
-        knode = self.nodes.get(node, None)
+        knode = self.unodes.get(node, None)
         if knode:
             self.nkG.removeNode(knode)
-            del self.nodes[node]
+            del self.unodes[node]
             del self.knodes[knode]
 
     def remove_nodes_from(self, nodes):
@@ -179,8 +179,8 @@ class Graph:
             self.remove_node(node)
 
     def remove_edge(self, source, target):
-        ksource = self.nodes.get(source, None)
-        ktarget = self.nodes.get(target, None)
+        ksource = self.unodes.get(source, None)
+        ktarget = self.unodes.get(target, None)
         if ksource is not None and ktarget is not None:
             self.nkG.removeEdge(ksource, ktarget)
 
@@ -190,13 +190,13 @@ class Graph:
         self.nkG.compactEdges()
 
     def has_successor(self, node):
-        knode = self.nodes.get(node, None)
+        knode = self.unodes.get(node, None)
         if knode is None:
             return False
         return len(self.nkG.neighbors(knode)) > 0
 
     def has_predecessor(self, node):
-        knode = self.nodes.get(node, None)
+        knode = self.unodes.get(node, None)
         if knode is None:
             return False
         if self.nkG.isDirected():
@@ -219,8 +219,8 @@ class Graph:
         if target is None or source is None:
             return self.nkG.numberOfEdges()
         else:
-            if source in self.nodes and target in self.nodes:
-                return 1
+            if source in self.unodes and target in self.unodes:
+                return 1 # TODO doesn't read right
             else:
                 return 0
 
@@ -240,7 +240,7 @@ class Graph:
     def subgraph(self, nodes):
         sub = self.__class__()
         for node in nodes:
-            knode = self.nodes.get(node, None)
+            knode = self.unodes.get(node, None)
             if knode is None:
                 continue
             sub.nodes[node] = knode
@@ -259,7 +259,9 @@ class Graph:
                 yield (self.knodes[ksource], self.knodes[ktarget])
 
     def nodes(self):
-        return self.nodes.keys()
+        # Correct, but wrong order. Wouldn't match with order in e.g. adjacency_matrix()
+        # return self.unodes.keys()
+        return self.to_user_nodes(self.nkG.nodes())
 
     def is_directed(self):
         return self.nkG.isDirected()
@@ -280,35 +282,38 @@ class Graph:
 
     def clear(self):
         self.nkG = graph.Graph(weighted=self.nkG.isWeighted(), directed=self.nkG.isDirected())
-        self.nodes = {}
-        self.knodes = {}
+        self.unodes.clear()
+        self.knodes.clear()
 
     def __iter__(self):
         """ Return an iterator over all nodes of the graph. """
-        return self.nodes.keys()
+        return self.nodes()
+        # Correct, but wrong order
+        # return self.unodes.keys()
 
     def __contains__(self, node):
         """ Return true if node exists in the graph. """
-        return node in self.nodes
+        return node in self.unodes
 
     def __len__(self):
         """ Return the number of nodes. """
-        return len(self.nodes)
+        return self.number_of_nodes()
 
     def ___getitem__(self, node):
         """ Return a dictionary of nodes connected to node as keys, and weight as values. """
-        knode = self.nodes.get(node, None)
+        knode = self.unodes.get(node, None)
         if knode:
             return {kn: self.nkG.weight(kn) for kn in self.nkG.neighbors(knode)}
         else:
             return {}
 
     def weight(self, source, target):
-        ksource = self.nodes.get(source, None)
-        ktarget = self.nodes.get(target, None)
+        ksource = self.unodes.get(source, None)
+        ktarget = self.unodes.get(target, None)
         assert ksource is not None
         assert ktarget is not None
         return self.nkG.weight(ksource, ktarget)
+
 
 class DiGraph(Graph):
     def __init__(self):
