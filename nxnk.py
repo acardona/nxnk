@@ -309,14 +309,15 @@ class Graph:
 
     def __contains__(self, node):
         """ Return true if node exists in the graph. """
-        return node in self.unodes
+        knode = self.unodes.get(node, None)
+        return knode is not None and self.nkG.hasNode(knode)
 
     def __len__(self):
         """ Return the number of nodes. """
         return self.number_of_nodes()
 
     def ___getitem__(self, node):
-        """ Return a dictionary of nodes connected to node as keys, and weight as values. """
+        """ Return a dictionary of nodes connected to node as keys, and edge weight as values. """
         knode = self.unodes.get(node, None)
         if knode:
             return {kn: self.nkG.weight(kn) for kn in self.nkG.neighbors(knode)}
@@ -324,6 +325,7 @@ class Graph:
             return {}
 
     def has_node(self, node):
+        """ Return true if node exists in the graph. """
         knode = self.unodes.get(node, None)
         return knode is not None and self.nkG.hasNode(knode)
 
