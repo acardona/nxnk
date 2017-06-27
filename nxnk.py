@@ -142,30 +142,63 @@ class Graph:
                 addEdge(ksource, ktarget, weight)
 
     def add_path(self, nodes, weight=1.0):
+        """ Add edges in a path.
+            If an edge exists, will update the weight. """
         weight = float(weight)
-        knodes = self.add_nodes_from(nodes)
-        knode1 = next(knodes)
-        for knode2 in knodes:
-            self.nkG.addEdge(knode1, knode2, weight)# faster function call with weight as 3rd arg than as keyword arg with w=weight
-            knode1 = knode2
-
-    def add_cycle(self, nodes, weight=1.0):
-        weight = float(weight)
-        knodes = self.add_nodes_from(nodes)
-        knode1 = next(knodes)
-        first = knode1
-        for knode2 in knodes:
-            self.nkG.addEdge(knode1, knode2, weight)
-            knode1 = knode2
-        self.nkG.addEdge(knode1, first, weight)
-
-    def add_star(self, nodes, weight=1.0):
-        """ First node makes an edge to every other node. """
-        weight = float(weight)
+        is_weighted = self.nkG.isWeighted()
+        # Dereference
+        hasEdge = self.nkG.hasEdge
+        addEdge = self.nkG.addEdge
+        setWeight = self.nkG.setWeight
+        #
         knodes = self.add_nodes_from(nodes)
         ksource = next(knodes)
         for ktarget in knodes:
-            self.nkG.addEdge(ksource, ktarget, weight)
+            if hasEdge(ksource, ktarget):
+                if is_weighted:
+                    setWeight(ksource, ktarget, weight)
+            else:
+                addEdge(ksource, ktarget, weight)# faster function call with weight as 3rd arg than as keyword arg with w=weight
+            ksource = ktarget
+
+    def add_cycle(self, nodes, weight=1.0):
+        """ Add edges into a closed path.
+            If an edge exists, will update the weight. """
+        weight = float(weight)
+        is_weighted = self.nkG.isWeighted()
+        # Dereference
+        hasEdge = self.nkG.hasEdge
+        addEdge = self.nkG.addEdge
+        setWeight = self.nkG.setWeight
+        #
+        knodes = self.add_nodes_from(nodes)
+        ksource = next(knodes)
+        for ktarget in chain(knodes, (ksource,)):
+            if hasEdge(ksource, ktarget):
+                if is_weighted:
+                    setWeight(ksource, ktarget, weight)
+            else:
+                addEdge(ksource, ktarget, weight)
+            ksource = ktarget
+
+    def add_star(self, nodes, weight=1.0):
+        """ First node makes an edge to every other node.
+            If an edge exists, will update the weight. """
+        weight = float(weight)
+        is_weighted = self.nkG.isWeighted()
+        # Dereference
+        hasEdge = self.nkG.hasEdge
+        addEdge = self.nkG.addEdge
+        setWeight = self.nkG.setWeight
+        #
+        knodes = self.add_nodes_from(nodes)
+        ksource = next(knodes)
+        for ktarget in knodes:
+            if hasEdge(ksource, ktarget):
+                if is_weighted:
+                    setWeight(ksource, ktarget, weight)
+            else:
+                addEdge(ksource, ktarget, weight)
 
     def remove_node(self, node):
         knode = self.unodes.get(node, None)
