@@ -13,7 +13,7 @@ Albert Cardona, 2017-06-23
 
 """
 
-from networkit import graph
+from networkit import graph, algebraic
 from itertools import chain
 from collections import deque
 
@@ -313,6 +313,25 @@ class Graph:
         assert ksource is not None
         assert ktarget is not None
         return self.nkG.weight(ksource, ktarget)
+
+    def adjacency(self):
+        """ Like networkx.adjacency_iter.
+            The order of the nodes is that of self.nodes(). """
+        # Dereference
+        neighbors = self.nkG.neighbors
+        kget = self.knodes.get
+        #
+        for knode in self.nkG.nodes():
+            yield list(map(kget, neighbors(knode)))
+
+    def adjacency_matrix(self, sparse=True):
+        """ If sparse=True (default) returns a scipy.sparse.crs.crs_matrix,
+            otherwise a numpy.ndarray with the dense matrix.
+            The edge weights are the values in the matrix.
+            To identify which matrix row and column index corresponds to which graph node,
+            get the node list from self.nkG.nodes(). """
+        t = 'sparse' if sparse else 'dense'
+        return algebraic.adjacencyMatrix(self.nkG, matrixType=t)
 
 
 class DiGraph(Graph):
