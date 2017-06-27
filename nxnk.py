@@ -18,8 +18,8 @@ from itertools import chain
 from collections import deque
 
 class Graph:
-    def __init__(self, directed=False, weighted=True):
-        self.nkG = graph.Graph(weighted=weighted, directed=directed)
+    def __init__(self, directed=False, weighted=True, nkG=None):
+        self.nkG = nkG if nkG is not None else graph.Graph(weighted=weighted, directed=directed)
         # Map of user-defined nodes to NetworKit-defined node IDs
         self.unodes = {}
         # Map of NetworKit-defined node IDs vs user-defined nodes
@@ -348,8 +348,16 @@ class Graph:
 
 
 class DiGraph(Graph):
-    def __init__(self, weighted=True):
-        Graph.__init__(self, directed=True, weighted=weighted)
+    def __init__(self, weighted=True, nkG=None):
+        Graph.__init__(self, directed=True, weighted=weighted, nkG=nkG)
 
     def copy(self, directed=True):
         return super(DiGraph, self).copy(directed=directed)
+
+    def reverse(self):
+        """ Return a new DiGraph with all edges reversed. """
+        d = DiGraph(weighted=self.nkG.isWeighted(), nkG=self.nkG.transpose())
+        d.unodes.update(self.unodes)
+        d.knodes.update(self.knodes)
+        return d
+
