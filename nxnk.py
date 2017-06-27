@@ -210,6 +210,9 @@ class Graph:
     def number_of_nodes(self):
         return self.nkG.numberOfNodes()
 
+    def order(self):
+        return self.nkG.numberOfNodes()
+
     def size(self):
         """ Number of edges in the graph. """
         return self.nkG.numberOfEdges()
@@ -319,6 +322,15 @@ class Graph:
             return {kn: self.nkG.weight(kn) for kn in self.nkG.neighbors(knode)}
         else:
             return {}
+
+    def has_node(self, node):
+        knode = self.unodes.get(node, None)
+        return knode is not None and self.nkG.hasNode(knode)
+
+    def has_edge(self, source, target):
+        ksource = self.unodes.get(source, None)
+        ktarget = self.unodes.get(target, None)
+        return ksource is not None and ktarget is not None and self.nkG.hasEdge(ksource, ktarget)
 
     def weight(self, source, target):
         ksource = self.unodes.get(source, None)
