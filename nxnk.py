@@ -251,8 +251,8 @@ class Graph:
         sub.nkG = self.nkG.subgraphFromNodes(sub.knodes.keys())
         return sub
 
-    def edges(self, weights=False):
-        if weights:
+    def edges(self, weight=False):
+        if weight:
             for ksource, ktarget in self.nkG.edges():
                 yield (self.knodes[ksource],
                        self.knodes[ktarget],
@@ -276,7 +276,7 @@ class Graph:
         #
         d = DiGraph(weighted=self.nkG.isWeighted())
         def reciprocal_edges():
-            for source, target, weight in self.edges(weights=True):
+            for source, target, weight in self.edges(weight=True):
                 yield source, target, weight
                 yield target, source, weight
         d.add_edges_from(reciprocal_edges())
