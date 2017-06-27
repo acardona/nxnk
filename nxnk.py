@@ -266,6 +266,19 @@ class Graph:
     def is_directed(self):
         return self.nkG.isDirected()
 
+    def to_directed(self):
+        """ Return a directed copy of the graph: two directed edges for every undirected edge. """
+        if self.is_directed():
+            return self.copy(directed=True)
+        #
+        d = DiGraph(weighted=self.nkG.isWeighted())
+        def reciprocal_edges():
+            for source, target, weight in self.edges(weights=True):
+                yield source, target, weight
+                yield target, source, weight
+        d.add_edges_from(reciprocal_edges())
+        return d
+
     def copy(self, directed=False):
         """ Safely deep-copy this graph. """
         # While it could be made faster, there is no guarantee as to what IDs
