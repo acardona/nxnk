@@ -335,8 +335,8 @@ class Graph:
 
 
 class DiGraph(Graph):
-    def __init__(self):
-        Graph.__init__(self, directed=True)
+    def __init__(self, weighted=True):
+        Graph.__init__(self, directed=True, weighted=weighted)
 
     def copy(self, directed=True):
         return super(DiGraph, self).copy(directed=directed)
