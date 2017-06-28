@@ -16,6 +16,7 @@ Albert Cardona, 2017-06-23
 from networkit import graph, algebraic
 from itertools import chain
 from collections import deque
+from util import deprecated
 
 class Graph:
     def __init__(self, directed=False, weighted=True, nkG=None):
@@ -433,6 +434,47 @@ class Graph:
             get the node list from self.nkG.nodes(). """
         t = 'sparse' if sparse else 'dense'
         return algebraic.adjacencyMatrix(self.nkG, matrixType=t)
+
+    # START deprecated methods that merely call methods above.
+
+    @deprecated("Call add_edges_from(edges) instead.")
+    def add_weighted_edges_from(self, edges):
+        """ OBSOLETE. Add edges from an iterable of tuples like (source, target, weight).
+            Calls self.add_edges_from(edges).
+            For compatibility with networkx."""
+        self.add_edges_from(edges)
+
+    @deprecated("Call neighbors(node) instead.")
+    def neighbors_iter(self, node):
+        """ OBSOLETE. Calls self.neighbors(node).
+            For compatibility with networkx. """
+        return self.neighbors(node)
+
+    @deprecated("Call edges(weight) instead.")
+    def edges_iter(self, weight=False):
+        """ OBSOLETE. Calls self.edges(weight=weight).
+            For compatibility with networkx. """
+        return self.edges(weight=weight)
+
+    @deprecated("Call adjacency() instead.")
+    def adjacency_iter(self):
+        """ OBSOLETE. Calls self.adjacency().
+            For compatibility with networkx. """
+        return self.adjacency()
+
+    @deprecated("Call adjacency() instead.")
+    def adjacency_list(self):
+        """ OBSOLETE. Calls list(self.adjacency()).
+            For compatibility with networkx. """
+        return list(self.adjacency())
+
+    @deprecated("Call degrees(nbunch, weight) instead.")
+    def degree_iter(self, nbunch=None, weight=False):
+        """ OBSOLETE. Calls self.degrees(nbunch=nbunch, weight=weight).
+            For compatibility with networkx. """
+        return self.degrees(nbunch=nbunch, weight=weight)
+
+
 
 
 class DiGraph(Graph):
