@@ -368,11 +368,13 @@ class Graph:
         assert ktarget is not None
         return self.nkG.weight(ksource, ktarget)
 
-    def degree(self, node, weight=False):
+    def degree(self, nbunch=None, weight=False):
         """ Return the degree for a single node if the node is in the graph.
+            Works like networkx.graph.degree when called with nbunch=node, and
+            does not handle an iterable of nodes.
             See also: degrees (which mimics networkx.degrees_iter). """
         # Test if nbunch holds a single, valid node
-        ksource = self.unodes.get(node, None)
+        ksource = self.unodes.get(nbunch, None)
         if ksource is not None:
             # nbunch is a single node
             if weight:
