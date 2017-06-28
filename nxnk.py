@@ -323,7 +323,7 @@ class Graph:
         """ Safely deep-copy this graph. """
         # While it could be made faster, there is no guarantee as to what IDs
         # the NetworKit Graph.addNode function will return.
-        copy = Graph(directed=directed)
+        copy = self.__class__(directed=directed)
         for ksource, ktarget in self.nkG.edges():
             copy.add_edge(self.knodes[ksource],
                           self.knodes[ktarget],
