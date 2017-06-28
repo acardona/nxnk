@@ -132,7 +132,7 @@ class Graph:
         setWeight = self.nkG.setWeight
         #
         knodes = self.add_nodes_from(chain.from_iterable(edges)) # a generator
-        # Consumes two nodes at a time: notice the call to next(knodes)
+        # Consumes two knodes at a time: notice the call to next(knodes)
         for ksource in knodes:
             ktarget = next(knodes)
             if hasEdge(ksource, ktarget):
