@@ -487,8 +487,8 @@ class Graph:
 
 
 class DiGraph(Graph):
-    def __init__(self, weighted=True, nkG=None):
-        Graph.__init__(self, directed=True, weighted=weighted, nkG=nkG)
+    def __init__(self, weighted=True, directed=True, nkG=None):
+        super(DiGraph, self).__init__(weighted=weighted, directed=True, nkG=nkG)
 
     def copy(self, directed=True):
         return super(DiGraph, self).copy(directed=directed)
