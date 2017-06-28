@@ -300,6 +300,9 @@ class Graph:
         # return self.unodes.keys()
         return self.to_user_nodes(self.nkG.nodes())
 
+    def is_multigraph(self):
+        return False
+
     def is_directed(self):
         return self.nkG.isDirected()
 
