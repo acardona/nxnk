@@ -141,7 +141,7 @@ class Graph:
             else:
                 addEdge(ksource, ktarget, weight)
 
-    def add_path(self, nodes, weight=1.0):
+    def add_path(self, nodes, weight=1.0, cycle=False):
         """ Add edges in a path.
             If an edge exists, will update the weight. """
         weight = float(weight)
@@ -153,6 +153,8 @@ class Graph:
         #
         knodes = self.add_nodes_from(nodes)
         ksource = next(knodes)
+        if cycle:
+            knodes = chain(knodes, (ksource,))
         for ktarget in knodes:
             if hasEdge(ksource, ktarget):
                 if is_weighted:
@@ -164,22 +166,7 @@ class Graph:
     def add_cycle(self, nodes, weight=1.0):
         """ Add edges into a closed path.
             If an edge exists, will update the weight. """
-        weight = float(weight)
-        is_weighted = self.nkG.isWeighted()
-        # Dereference
-        hasEdge = self.nkG.hasEdge
-        addEdge = self.nkG.addEdge
-        setWeight = self.nkG.setWeight
-        #
-        knodes = self.add_nodes_from(nodes)
-        ksource = next(knodes)
-        for ktarget in chain(knodes, (ksource,)):
-            if hasEdge(ksource, ktarget):
-                if is_weighted:
-                    setWeight(ksource, ktarget, weight)
-            else:
-                addEdge(ksource, ktarget, weight)
-            ksource = ktarget
+        self.add_path(nodes, weight=weight, cycle=True)
 
     def add_star(self, nodes, weight=1.0):
         """ First node makes an edge to every other node.
