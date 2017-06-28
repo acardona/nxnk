@@ -19,7 +19,7 @@ from collections import deque
 from util import deprecated
 
 class Graph:
-    def __init__(self, directed=False, weighted=True, nkG=None):
+    def __init__(self, weighted=True, directed=False, nkG=None):
         self.nkG = nkG if nkG is not None else graph.Graph(weighted=weighted, directed=directed)
         # Map of user-defined nodes to NetworKit-defined node IDs
         self.unodes = {}
