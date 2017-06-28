@@ -23,7 +23,14 @@ This is an alpha release, subject to change and quite incomplete. At present, on
    In ```nxnk```, these additional "_iter" methods are merely provided by compatibility with networkx and marked as deprecated. By design, the proper methods are implemented directly as generators. In this aspect, nxnk follows a similar shift from python 2 to python 3, in that e.g. the ```range``` function went from returning a list to merely promising to generate one on the fly, and removed from python 3 all the "_iter"-suffixed methods that had been added to python 2 for performance reasons.
 
 2. ```nxnk``` does not store a dictionary of properties for every node and for every edge, unlike NetworkX. All ```nxnk``` provides is the means to store a floating-point value as edge weight, mirroring the capabilities of the ```networkit.Graph```. Note that you will have to initialize ```nxnk.Graph``` or ```nxnk.DiGraph``` with ```weighted=True``` (the default) for graph edges to be able to hold weights other than 1.0.
-   Deriving from this fundamental feature, ```nxnk``` does not provide any means to store edge or node property maps (networkx stores a dictionary for every node and edge, even an empty one when not providing any properties), and therefore, all methods that in networkx take attribute maps do not do so in ```nxnk```.
+   Deriving from this fundamental feature, ```nxnk``` does not provide any means to store edge or node property maps (networkx stores a dictionary for every node and edge, even an empty one when not providing any properties), and therefore, all methods that in networkx take attribute maps do not do so in ```nxnk```. Fortunately, these are always provided as optional arguments in networkx, and therefore, if you code does not use them, ```nxnk``` will work as a drop-in replacement.
 
 3. Networkx graph classes offer the method ```degree``` which works for both a single node, a list of nodes, or all nodes, returning different data types depending on the argument. In ```nxnk```, functions always return the same data type (or None), and therefore ```degree``` is limited to returning the degree of a single node. Use ```degrees``` for an iterable of the degree of all nodes, and map ```degree``` to an iterable of a subset of nodes when wanting the degree of a subset of nodes.
+
+
+## Using nxnk Graph and DiGraph with NetworkX functions (networkx interop)
+
+Given that ```nxnk``` Graph and DiGraph classes offer the same function interface as their homonimous classes in NetworkX, most of the NetworkX library can operate correctly with ```nxnk``` versions of Graph and DiGraph.
+
+For cases where NetworkX library functions expect lists instead of generators, call the method ```nx_adapter()``` in either Graph or DiGraph which will produce an editable view (```NXGraph``` or ```NXDiGraph```) with methods that behave like those of NetworkX (e.g. returning a list instead of a generator).
 
