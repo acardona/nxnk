@@ -495,7 +495,7 @@ class DiGraph(Graph):
 
     def reverse(self):
         """ Return a new DiGraph with all edges reversed. """
-        d = DiGraph(weighted=self.nkG.isWeighted(), nkG=self.nkG.transpose())
+        d = self.__class__(weighted=self.nkG.isWeighted(), nkG=self.nkG.transpose())
         d.unodes.update(self.unodes)
         d.knodes.update(self.knodes)
         return d
