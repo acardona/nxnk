@@ -262,14 +262,20 @@ class Graph:
             yield node
 
     def subgraph(self, nodes):
-        sub = self.__class__()
+        # Dereference
+        uget = self.unodes.get
+        #
+        unodes = {}
+        knodes = {}
         for node in nodes:
-            knode = self.unodes.get(node, None)
+            knode = uget(node, None)
             if knode is None:
                 continue
-            sub.nodes[node] = knode
-            sub.knodes[knode] = node
-        sub.nkG = self.nkG.subgraphFromNodes(sub.knodes.keys())
+            unodes[node] = knode
+            knodes[knode] = node
+        sub = self.__class__(nkG=self.nkG.subgraphFromNodes(knodes.keys()))
+        sub.unodes = unodes
+        sub.knodes = knodes
         return sub
 
     def edges(self, weight=False):
