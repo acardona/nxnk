@@ -444,6 +444,14 @@ class Graph:
         t = 'sparse' if sparse else 'dense'
         return algebraic.adjacencyMatrix(self.nkG, matrixType=t)
 
+    def nx_adapter(self):
+        """ Return a wrapper over this nxnk graph (not a copy) with methods compatible with networkx. """
+        nxg = NXGraph(weighted=self.nkG.isWeighted(), nkG=self.nkG)
+        nxg.unodes = self.unodes
+        nxg.knodes = self.knodes
+        return nxg
+
+
     # START deprecated methods that merely call methods above.
 
     @deprecated("Call add_edges_from(edges) instead.")
@@ -485,7 +493,6 @@ class Graph:
 
 
 
-
 class DiGraph(Graph):
     def __init__(self, weighted=True, directed=True, nkG=None):
         super(DiGraph, self).__init__(weighted=weighted, directed=True, nkG=nkG)
@@ -499,4 +506,66 @@ class DiGraph(Graph):
         d.unodes.update(self.unodes)
         d.knodes.update(self.knodes)
         return d
+
+    def nx_adapter(self):
+        """ Return a wrapper over this graph (not a copy) with methods compatible with networkx. """
+        nxd = NXDiGraph(nkG=self.nkG)
+        nxd.unodes = self.unodes
+        nxd.knodes = self.knodes
+        return nxd
+
+
+
+# It is likely that the code duplication below can be solved with multiple inheritance.
+
+class NXGraph(Graph):
+    """
+    Adapter class for nxnk.Graph to work as a drop-in replacement for networkx.Graph in NetworkX libraries:
+     1. wrap methods to return lists instead of iterables.
+     2. run iterables returned by methods that don't in networkx.
+    """
+
+    def __init__(self, weighted=True, directed=False, nkG=None):
+        super(NXGraph, self).__init__(weighted=weighted, directed=directed, nkG=nkG)
+
+    def nodes(self):
+        return list(super(NXGraph, self).nodes())
+
+    def edges(self):
+        return list(super(NXGraph, self).edges())
+
+    def add_nodes_from(self, nodes):
+        deque(super(NXGraph, self).add_nodes_from(nodes), 0)
+
+    def selfloop_edges(self):
+        return list(super(NXGraph, self).selfloop_edges())
+
+    def nodes_with_selfloops(self):
+        return list(super(NXGraph, self).nodes_with_selfloops())
+
+
+class NXDiGraph(DiGraph):
+    """
+    Adapter class for nxnk.DiGraph to work as a drop-in replacement for networkx.DiGraph in NetworkX libraries:
+     1. wrap methods to return lists instead of iterables.
+     2. run iterables returned by methods that don't in networkx.
+    """
+
+    def __init__(self, weighted=True, directed=True, nkG=None):
+        super(NXDiGraph, self).__init__(weighted=weighted, directed=directed, nkG=nkG)
+
+    def nodes(self):
+        return list(super(NXDiGraph, self).nodes())
+
+    def edges(self):
+        return list(super(NXDiGraph, self).edges())
+
+    def add_nodes_from(self, nodes):
+        deque(super(NXDiGraph, self).add_nodes_from(nodes), 0)
+
+    def selfloop_edges(self):
+        return list(super(NXDiGraph, self).selfloop_edges())
+
+    def nodes_with_selfloops(self):
+        return list(super(NXDiGraph, self).nodes_with_selfloops())
 
