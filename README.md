@@ -1,7 +1,7 @@
 # nxnk
 A networkx-like wrapper for the NetworKit library
 
-```nxnk``` aims at providing a drop-in replacement for networkx Graph and DiGraph classes, whenever node and edge attributes are not necessary.
+```nxnk``` aims at providing a drop-in replacement for networkx Graph and DiGraph classes, whenever node and edge attributes are not necessary except for edge weight.
 
 NetworKit (https://github.com/kit-parco/networkit) is a python library focusing on high performance graph analysis by means of a finely tuned C++ backend, whereas NetworkX (https://github.com/networkx/networkx) is a widely used python-only library for constructing, manipulating and analyzing graphs.
 
@@ -11,7 +11,7 @@ This library, *nxnk*, is an attempt at easing the creation and editing of graphs
 
 In creating and editing graphs, the performance of *nxnk* is comparable (slightly better: 10-50%) to that of NetworkX.
 
-You could thin of ```nxnk``` as providing a mapping between your graph nodes (any hashable object) and NetworKit's internal node representation (an integer), by using a networkx-like interface.
+You could think of ```nxnk``` as providing a mapping between your graph nodes (any hashable object) and NetworKit's internal node representation (an integer), by using a networkx-like interface.
 
 This is an alpha release, subject to change and quite incomplete. At present, only ```Graph``` and ```DiGraph``` are supported, with only some bridge functions to access NetworKit algorithm implementations. To access the latter, use the ```self.nkG```, which is an instance of a NetworKit ```graph.Graph```, and translate between user-defined nodes and NetworKit-defined nodes (the "knodes") using the dictionaries ```nodes``` and ```knodes``` in either ```Graph``` or ```DiGraph```, or use the convenience methods ```to_user_nodes``` and ```to_networkit_nodes```. Otherwise, all presently existing methods operate exclusively in user-defined node IDs, taking as argument and returning only user-defined node IDs (with the exception of ```to_networkit_nodes```).
 
